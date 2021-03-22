@@ -5,8 +5,12 @@ Werkzeug Documentation:  http://werkzeug.pocoo.org/documentation/
 This file creates your application.
 """
 
-from app import app
-from flask import render_template, request, redirect, url_for
+import os
+from app import app, db
+from flask import render_template, request, redirect, url_for, flash, abort
+from app.forms import PropertyForm
+from app.models import Property
+from werkzeug.utils import secure_filename
 
 
 ###
@@ -22,7 +26,55 @@ def home():
 @app.route('/about/')
 def about():
     """Render the website's about page."""
-    return render_template('about.html', name="Mary Jane")
+    return render_template('about.html', name="Mario Munroe")
+
+
+@app.route('/property', methods=['POST', 'GET'])
+def property():
+    form = PropertyForm()
+
+    # Validate profile info on submit
+    if request.method == 'POST':
+    
+        # Get image data and save to upload folder
+        image = request.files['photo']
+        filename = secure_filename(image.filename)
+        image.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+        
+        # Get the rest of the profile data
+        title = form.title.data
+        description = form.description.data
+        rooms = form.rooms.data
+        bathrooms = form.bathrooms.data
+        price = form.price.data
+        location = form.location.data
+        propertyType = form.propertyType.data
+
+        # Save data to database
+        newProperty = Property(title=title, description=description, rooms=rooms, bathrooms=bathrooms, price=price, location=location, pType=propertyType, photo=filename )
+        db.session.add(newProperty)
+        db.session.commit()
+        
+        properties = Property.query.all()
+        flash('Succcessfully Added')
+        return redirect(url_for('properties', properties=properties))
+
+    return render_template('property.html', form = form)
+
+
+
+@app.route('/properties', methods=['POST', 'GET'])
+def properties():
+    properties = Property.query.all()
+
+
+def get_uploaded_images():
+    rootdir = os.getcwd()
+    list = []
+    for subdir, dirs, files in os.walk(rootdir + '/app/static/uploads/'):
+        for file in files:
+            list.append(file)
+        return list
 
 
 ###
