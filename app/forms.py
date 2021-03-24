@@ -11,6 +11,10 @@ class PropertyForm(FlaskForm):
 	bathrooms = TextField("No. of Bathrooms", validators=[DataRequired()])
 	price = TextField("Price", validators=[DataRequired()])
 	location = TextField("Location", validators=[DataRequired()])
-	#propertyType = SelectField(u'Property Type', choices=[('House'), ('Apartment')])
-	propertyType = SelectField('Property Type', choices=[('House'), ('Apartment')])
+	propertyType = SelectField(u'Property Type', choices=[('House'), ('Apartment')])
+	#propertyType = SelectField('Property Type', choices=[('House'), ('Apartment')])
 	photo = FileField('Photo', validators=[FileRequired(), FileAllowed(['jpg', 'png', 'Images only!'])])
+
+# class LoginForm(FlaskForm):
+#     username = StringField('Username', validators=[InputRequired()])
+#     password = PasswordField('Password', validators=[InputRequired()])
