@@ -66,8 +66,12 @@ def property():
 @app.route('/properties', methods=['POST', 'GET'])
 def properties():
     properties = Property.query.all()
-    return render_template('properties.html')
+    return render_template('properties.html', properties = properties)
 
+@app.route('/property/<propertyid>')
+def propertyid(propertyid):
+    propertyid=PropertyMod.query.get(propertyid)
+    return render-template('propertyid.html', propertyid=propertyid)
 
 def get_uploaded_images():
     rootdir = os.getcwd()
